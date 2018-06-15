@@ -24,6 +24,7 @@
 #include <linux/limits.h>
 #endif
 
+#define PROGNAME "rng"
 #define RNG_VERSION "1.0.0"
 
 #define _GNU_SOURCE
