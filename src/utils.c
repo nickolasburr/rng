@@ -286,17 +286,6 @@ int is_digit (int c) {
 }
 
 /**
- * Determine if pointer is a null pointer.
- */
-int is_null (void *ptr) {
-	if (ptr == NULL) {
-		return 1;
-	}
-
-	return 0;
-}
-
-/**
  * Determine if string is numeric.
  */
 int is_numeric (char *str) {
