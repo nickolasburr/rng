@@ -11,12 +11,8 @@
 #include "error.h"
 #include "utils.h"
 
-#define OPT_LSEP "--"
-
-typedef struct {
-	char *key;
-	int value;
-} method_t;
+#define NUM_OPTIONS 1
+#define OPT_DELIMIT "--"
 
 typedef struct {
 	char *value;
@@ -24,7 +20,6 @@ typedef struct {
 	char *desc;
 } option_t;
 
-static method_t methods[NUM_METHODS];
 static option_t options[NUM_OPTIONS];
 
 int get_bitmask_from_key(char *);
