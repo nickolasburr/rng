@@ -8,11 +8,6 @@
 
 static option_t options[] = {
 	{
-		"--file",
-		"-f",
-		"File whose contents are sent to STDIN.",
-	},
-	{
 		"--help",
 		"-h",
 		"Show help information.",
@@ -32,7 +27,7 @@ void usage (void) {
 	char fvalue[36];
 
 	fprintf(stdout, "Usage: rng [OPTIONS]\n\n");
-	fprintf(stdout, "Options:\n\n");
+	fprintf(stdout, "OPTIONS:\n\n");
 
 	for (index = 0; index < NUM_OPTIONS; index += 1) {
 		option_t *option = &options[index];

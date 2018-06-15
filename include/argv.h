@@ -11,7 +11,7 @@
 #include "error.h"
 #include "utils.h"
 
-#define NUM_OPTIONS 1
+#define NUM_OPTIONS 2
 #define OPT_DELIMIT "--"
 
 typedef struct {
@@ -21,8 +21,6 @@ typedef struct {
 } option_t;
 
 static option_t options[NUM_OPTIONS];
-
-int get_bitmask_from_key(char *);
 void usage(void);
 
 #endif /* RNG_ARGV_H */
