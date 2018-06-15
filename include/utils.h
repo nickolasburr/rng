@@ -25,6 +25,7 @@ char *dir_name(char *);
 int index_of(char *, char **, size_t);
 int in_array(char *, char **, size_t);
 int length(char *);
+char **str_split(char *, char);
 
 /**
  * Filesystem utilities
