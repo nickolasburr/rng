@@ -2,7 +2,7 @@
 
 Copy range of lines from `stdin` to `stdout`.
 
-# Examples
+## Examples
 
 Get lines 7-15 in `file.txt`.
 
