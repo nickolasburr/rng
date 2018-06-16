@@ -21,8 +21,6 @@ TOOLS   = tools
 CSFILES = $(wildcard $(SOURCES)/*.c)
 OBFILES = $(patsubst %.c,%.o,$(CSFILES))
 
-KERNEL := $(shell sh -c 'uname -s 2>/dev/null || echo unknown')
-
 CFLAGS  = -I$(INCLUDE)
 LDFLAGS = -pthread -lz
 
