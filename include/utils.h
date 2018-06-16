@@ -12,6 +12,8 @@
 #include <sys/types.h>
 #include <fcntl.h>
 #include "common.h"
+#include "assert.h"
+#include "mem.h"
 
 /**
  * String utilities
@@ -25,7 +27,6 @@ char *dir_name(char *);
 int index_of(char *, char **, size_t);
 int in_array(char *, char **, size_t);
 int length(char *);
-char **str_split(char *, char);
 
 /**
  * Filesystem utilities
@@ -50,7 +51,6 @@ int is_char(const char *);
  */
 
 int is_digit(int);
-int is_null(void *);
 int is_numeric(char *);
 
 #endif /* RNG_UTILS_H */
