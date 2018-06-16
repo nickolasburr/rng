@@ -1,6 +1,6 @@
 # rng
 
-Copy range of lines from stdin to stdout.
+Copy range of lines from `stdin` to `stdout`.
 
 # Examples
 
@@ -13,5 +13,5 @@ rng 7,5 < file.txt
 Skip the first 4 lines of input.
 
 ```
-echo -e "First\nSecond\nThird\nFourth\nFifth" | ./rng 5
+echo -e "First\nSecond\nThird\nFourth\nFifth" | rng 5
 ```
