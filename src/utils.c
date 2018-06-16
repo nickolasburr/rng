@@ -109,53 +109,6 @@ int length (char *str) {
 }
 
 /**
- * Basic `strtok_r` wrapper (derived from https://stackoverflow.com/a/9210560/4322351)
- */
-char **str_split (char *str, const char delim) {
-	size_t count, index;
-	char *tmp, *token, *lastcomma, *ptr;
-	char **result;
-	char _delim[2];
-
-	count = 0;
-	result = 0;
-	lastcomma = 0;
-	tmp = str;
-	_delim[0] = delim;
-	_delim[1] = 0;
-
-	while (*tmp) {
-		if (_delim == *tmp) {
-			count++;
-			lastcomma = tmp;
-		}
-
-		tmp++;
-	}
-
-	count += (lastcomma < (str + strlen(str) - 1));
-	count++;
-
-	result = ALLOC(sizeof(char *) * count);
-
-	if (result) {
-		index = 0;
-		token = strtok_r(str, _delim, &ptr);
-
-		while (token) {
-			assert(index < count);
-			*(result + index++) = strdup(token);
-			token = strtok_r(NULL, _delim, &ptr);
-        }
-
-		assert(index == (count - 1));
-		*(result + index) = 0;
-	}
-
-	return result;
-}
-
-/**
  *
  * Filesystem utilities
  *

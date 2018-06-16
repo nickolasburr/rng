@@ -14,8 +14,10 @@
  */
 
 int main (int argc, char **argv) {
-	int index, opt_value, long_opt_index;
-	char **tokens;
+	int count, index, start, end, opt_value, long_opt_index;
+	char *line, *range, *token;
+	size_t len;
+	ssize_t read;
 
 	long_opt_index = 0;
 
@@ -47,19 +49,46 @@ int main (int argc, char **argv) {
 		exit(EXIT_FAILURE);
 	}
 
-	fprintf(stdout, "argc: %d\n", argc);
-	fprintf(stdout, "argv[1]: %s\n", argv[1]);
+	index = 0;
+	start = 0;
+	end = 0;
 
-	tokens = str_split(argv[1], ',');
+	range = ALLOC(sizeof(argv[1]));
+	copy(range, argv[1]);
 
-	if (tokens) {
-		for (index = 0; *(tokens + index); index += 1) {
-			fprintf(stdout, "Line number: %s\n", *(tokens + index));
-			FREE(*(tokens + index));
+	while ((token = strsep(&range, ","))) {
+		if (!is_numeric(token)) {
+			fprintf(stderr, "%s: '%s' is not a valid integer\n\n", PROGNAME, token);
+
+			usage();
+
+			exit(EXIT_FAILURE);
 		}
 
-		fprintf(stdout, "\n");
-		FREE(tokens);
+		switch (index) {
+			case 0:
+				start = atoi(token);
+
+				break;
+			case 1:
+				end = atoi(token);
+
+				break;
+			default:
+				break;
+		}
+
+		index++;
+	}
+
+	count = 1;
+
+	while ((read = getline(&line, &len, stdin)) != -1) {
+		if (count >= start && (count <= end || !end)) {
+			fwrite(line, read, 1, stdout);
+		}
+
+		count++;
 	}
 
 	return EXIT_SUCCESS;
