@@ -1,6 +1,6 @@
 # rng
 
-Copy range of lines from `stdin` to `stdout`.
+An elegant alternative to `sed -n '<START>,<END>p'`.
 
 ## Examples
 
