@@ -35,14 +35,20 @@ For example, `make install PREFIX=/opt`
 
 ## Examples
 
-Get lines 7-15 in `file.txt`.
+Get lines 7-15 in `Makefile`.
 
 ```
-rng 7,15 file.txt
+rng 7,15 Makefile
 ```
 
 Skip the first 4 lines of input.
 
 ```
 echo -e "First\nSecond\nThird\nFourth\nFifth" | rng 5
+```
+
+Read up to line 25 in `Makefile`.
+
+```
+rng ,25 Makefile
 ```
