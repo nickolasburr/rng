@@ -47,7 +47,7 @@ Skip the first 4 lines of input.
 echo -e "First\nSecond\nThird\nFourth\nFifth" | rng 5
 ```
 
-Read up to line 25 in `Makefile`.
+Output lines 1-25 in `Makefile`.
 
 ```
 rng ,25 Makefile
