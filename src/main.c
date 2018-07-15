@@ -2,22 +2,22 @@
  * main.c
  *
  * Copyright (C) 2018 Nickolas Burr <nickolasburr@gmail.com>
+ *
+ * Usage:
+ *
+ * rng 5,35 <FILE>
+ * cat <FILE> | rng 5,35
  */
 
 #include "main.h"
 
-/**
- * Usage:
- *
- * rng 5,35 < filename
- * cat filename | rng 5,35
- */
-
 int main (int argc, char **argv) {
-	int count, index, start, end, opt_value, long_opt_index;
+	int index, zindex;
+	int count, start, end, opt_value, long_opt_index;
 	char *line, *range, *token;
 	size_t len;
 	ssize_t read;
+	FILE *stream = NULL;
 
 	long_opt_index = 0;
 
@@ -43,47 +43,76 @@ int main (int argc, char **argv) {
 		}
 	}
 
-	if (argc != 2) {
+	/**
+	 * At minimum, require a range argument.
+	 */
+	if (argc < 2) {
 		fprintf(stderr, "%s: Invalid number of arguments\n", PROGNAME);
 
 		exit(EXIT_FAILURE);
 	}
 
-	index = 0;
 	start = 0;
 	end = 0;
 
-	range = ALLOC(sizeof(argv[1]));
-	copy(range, argv[1]);
-
-	while ((token = strsep(&range, ","))) {
-		if (!is_numeric(token)) {
-			fprintf(stderr, "%s: '%s' is not a valid integer\n\n", PROGNAME, token);
-
-			usage();
-
-			exit(EXIT_FAILURE);
-		}
-
+	for (index = 1; index < argc; index += 1) {
 		switch (index) {
-			case 0:
-				start = atoi(token);
+			case 1:
+				range = ALLOC(sizeof(argv[index]));
+				copy(range, argv[index]);
+
+				zindex = 0;
+
+				while ((token = strsep(&range, ","))) {
+					if (!is_numeric(token)) {
+						fprintf(stderr, "%s: '%s' is not a valid range.\n\n", PROGNAME, argv[index]);
+						usage();
+
+						exit(EXIT_FAILURE);
+					}
+
+					switch (zindex) {
+						case 0:
+							start = (int) strtoul(token, NULL, 0);
+
+							break;
+						case 1:
+							end = (int) strtoul(token, NULL, 0);
+
+							break;
+						default:
+							break;
+					}
+
+					zindex++;
+				}
 
 				break;
-			case 1:
-				end = atoi(token);
+			case 2:
+				if (!is_file(argv[index])) {
+					fprintf(stderr, "%s: '%s' is not a valid filename.\n\n", PROGNAME, argv[index]);
+
+					exit(EXIT_FAILURE);
+				}
+
+				stream = fopen(argv[index], "r");
 
 				break;
 			default:
 				break;
 		}
+	}
 
-		index++;
+	/**
+	 * In the absence of a filename, read from STDIN.
+	 */
+	if (is_null(stream)) {
+		stream = stdin;
 	}
 
 	count = 1;
 
-	while ((read = getline(&line, &len, stdin)) != -1) {
+	while ((read = getline(&line, &len, stream)) != -1) {
 		if (count >= start && (count <= end || !end)) {
 			fwrite(line, read, 1, stdout);
 		}
