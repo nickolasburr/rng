@@ -58,7 +58,7 @@ int main (int argc, char **argv) {
 	for (index = 1; index < argc; index += 1) {
 		switch (index) {
 			case 1:
-				range = ALLOC(sizeof(argv[index]));
+				range = ALLOC(sizeof(argv[index]) + NULL_BYTE);
 				copy(range, argv[index]);
 
 				zindex = 0;
