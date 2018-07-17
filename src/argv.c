@@ -24,20 +24,13 @@ static option_t options[] = {
  */
 void usage (void) {
 	int index;
-	char fvalue[36];
 
-	fprintf(stdout, "Usage: rng [OPTIONS]\n\n");
+	fprintf(stdout, "Usage: rng [OPTIONS] <START>,[<END>] [FILE]\n\n");
 	fprintf(stdout, "OPTIONS:\n\n");
 
 	for (index = 0; index < NUM_OPTIONS; index += 1) {
 		option_t *option = &options[index];
 
-		/**
-		 * Format option->value string.
-		 */
-		copy(fvalue, option->value);
-		concat(fvalue, ",");
-
-		fprintf(stdout, "%4s%-22s %s: %-24s\n", "", fvalue, option->alias, option->desc);
+		fprintf(stdout, "%4s%s, %s: %-24s\n", "", option->alias, option->value, option->desc);
 	}
 }
