@@ -122,6 +122,8 @@ int main (int argc, char **argv) {
 		count++;
 	}
 
+	FREE(range);
+
 	return EXIT_SUCCESS;
 
 on_error:
