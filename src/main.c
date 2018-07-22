@@ -12,7 +12,7 @@
 #include "main.h"
 
 int main (int argc, char **argv) {
-	int index, zindex;
+	int sets, index, zindex;
 	int count, start, end, opt_value, long_opt_index;
 	size_t len;
 	ssize_t read;
@@ -61,10 +61,10 @@ int main (int argc, char **argv) {
 		exit(EXIT_FAILURE);
 	}
 
+	sets = 0;
 	start = 0;
 	end = 0;
 
-	int track = 0;
 	ranges = ALLOC(sizeof(ranges));
 
 	for (index = 1; index < argc; index += 1) {
@@ -81,9 +81,11 @@ int main (int argc, char **argv) {
 				for (range = strtok_r(argv[index], ":", &ptr); !is_null(range); range = strtok_r(NULL, ":", &ptr)) {
 					zindex = 0;
 
-					fprintf(stdout, "1.) range: %s\n", range);
-
 					rng = ALLOC(sizeof(rng));
+
+					/**
+					 * Default start,end values.
+					 */
 					rng->start = 0;
 					rng->end = 0;
 
@@ -91,8 +93,6 @@ int main (int argc, char **argv) {
 					 * Split the range into tokens.
 					 */
 					while ((token = strsep(&range, ","))) {
-						fprintf(stdout, "2.) token: %s\n", token);
-
 						if (!is_numeric(token)) {
 							fprintf(stderr, "%s: '%s' is not a valid range.\n\n", PROGNAME, argv[index]);
 
@@ -118,7 +118,7 @@ int main (int argc, char **argv) {
 					}
 
 					RESIZE(ranges, sizeof(rng));
-					ranges[track++] = rng;
+					ranges[sets++] = rng;
 				}
 
 				break;
@@ -145,21 +145,20 @@ int main (int argc, char **argv) {
 	}
 
 	count = 1;
-	int t;
 
 	while ((read = getline(&line, &len, stream)) != -1) {
-		for (t = 0; t < track; t++) {
-			// fprintf(stdout, "track: %d\n", track);
-			// fprintf(stdout, "ranges[t]->start: %d\n", ranges[t]->start);
-			// fprintf(stdout, "ranges[t]->end: %d\n", ranges[t]->end);
-
-			if (count >= ranges[t]->start && (count <= ranges[t]->end || !ranges[t]->end)) {
+		for (index = 0; index < sets; index++) {
+			if (count >= ranges[index]->start && (count <= ranges[index]->end || !ranges[index]->end)) {
 				fwrite(line, read, 1, stdout);
 			}
 		}
 
 		count++;
 	}
+
+	/**
+	 * @todo: Properly free ranges pointer array.
+	 */
 
 	FREE(range);
 
