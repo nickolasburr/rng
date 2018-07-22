@@ -16,17 +16,23 @@ int main (int argc, char **argv) {
 	int count, start, end, opt_value, long_opt_index;
 	size_t len;
 	ssize_t read;
-	char *line = NULL,
-	     *range = NULL,
-	     *token = NULL;
 	FILE *stream = NULL;
+	char *ptr = NULL;
+	char *range = NULL;
+	char *line = NULL,
+	     *token = NULL;
+	Range_T **ranges;
+	Range_T *rng;
 
-	long_opt_index = 0;
-
+	/**
+	 * Designated getopt long options.
+	 */
 	static struct option long_options[] = {
 		{ "help", no_argument, 0, 'h' },
 		{ "version", no_argument, 0, 'v' },
 	};
+
+	long_opt_index = 0;
 
 	while ((opt_value = getopt_long(argc, argv, "hv", long_options, &long_opt_index)) != -1) {
 		switch (opt_value) {
@@ -46,7 +52,8 @@ int main (int argc, char **argv) {
 	}
 
 	/**
-	 * At minimum, require a range argument.
+	 * At minimum, require a range argument. This is enforced to
+	 * prevent rng from being [mis]used the way cat is [mis]used.
 	 */
 	if (argc < 2) {
 		fprintf(stderr, "%s: Invalid number of arguments\n", PROGNAME);
@@ -57,36 +64,61 @@ int main (int argc, char **argv) {
 	start = 0;
 	end = 0;
 
+	int track = 0;
+	ranges = ALLOC(sizeof(ranges));
+
 	for (index = 1; index < argc; index += 1) {
+
+		/**
+		 * Use positional context to determine
+		 * the anticipated type of argument.
+		 */
 		switch (index) {
 			case 1:
-				range = ALLOC(sizeof(char) * (length(argv[index]) + NULL_BYTE));
-				copy(range, argv[index]);
+				/**
+				 * Get range[s] from ranges string.
+				 */
+				for (range = strtok_r(argv[index], ":", &ptr); !is_null(range); range = strtok_r(NULL, ":", &ptr)) {
+					zindex = 0;
 
-				zindex = 0;
+					fprintf(stdout, "1.) range: %s\n", range);
 
-				while ((token = strsep(&range, ","))) {
-					if (!is_numeric(token)) {
-						fprintf(stderr, "%s: '%s' is not a valid range.\n\n", PROGNAME, argv[index]);
-						usage();
+					rng = ALLOC(sizeof(rng));
+					rng->start = 0;
+					rng->end = 0;
 
-						goto on_error;
+					/**
+					 * Split the range into tokens.
+					 */
+					while ((token = strsep(&range, ","))) {
+						fprintf(stdout, "2.) token: %s\n", token);
+
+						if (!is_numeric(token)) {
+							fprintf(stderr, "%s: '%s' is not a valid range.\n\n", PROGNAME, argv[index]);
+
+							usage();
+
+							goto on_error;
+						}
+
+						switch (zindex) {
+							case 0:
+								rng->start = (int) strtoul(token, NULL, 0);
+
+								break;
+							case 1:
+								rng->end = (int) strtoul(token, NULL, 0);
+
+								break;
+							default:
+								break;
+						}
+
+						zindex++;
 					}
 
-					switch (zindex) {
-						case 0:
-							start = (int) strtoul(token, NULL, 0);
-
-							break;
-						case 1:
-							end = (int) strtoul(token, NULL, 0);
-
-							break;
-						default:
-							break;
-					}
-
-					zindex++;
+					RESIZE(ranges, sizeof(rng));
+					ranges[track++] = rng;
 				}
 
 				break;
@@ -113,10 +145,17 @@ int main (int argc, char **argv) {
 	}
 
 	count = 1;
+	int t;
 
 	while ((read = getline(&line, &len, stream)) != -1) {
-		if (count >= start && (count <= end || !end)) {
-			fwrite(line, read, 1, stdout);
+		for (t = 0; t < track; t++) {
+			// fprintf(stdout, "track: %d\n", track);
+			// fprintf(stdout, "ranges[t]->start: %d\n", ranges[t]->start);
+			// fprintf(stdout, "ranges[t]->end: %d\n", ranges[t]->end);
+
+			if (count >= ranges[t]->start && (count <= ranges[t]->end || !ranges[t]->end)) {
+				fwrite(line, read, 1, stdout);
+			}
 		}
 
 		count++;
