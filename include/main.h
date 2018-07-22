@@ -12,6 +12,7 @@
 #include "except.h"
 #include "argv.h"
 #include "mem.h"
+#include "range.h"
 #include "utils.h"
 
 #endif /* RNG_MAIN_H */
