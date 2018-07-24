@@ -52,8 +52,7 @@ int main (int argc, char **argv) {
 	}
 
 	/**
-	 * At minimum, require a range argument. This is enforced to
-	 * prevent rng from being [mis]used the way cat is [mis]used.
+	 * At minimum, require a range argument.
 	 */
 	if (argc < 2) {
 		fprintf(stderr, "%s: Invalid number of arguments\n", PROGNAME);
@@ -62,9 +61,6 @@ int main (int argc, char **argv) {
 	}
 
 	sets = 0;
-	start = 0;
-	end = 0;
-
 	ranges = ALLOC(sizeof(ranges));
 
 	for (index = 1; index < argc; index += 1) {
@@ -84,7 +80,7 @@ int main (int argc, char **argv) {
 					rng = ALLOC(sizeof(rng));
 
 					/**
-					 * Default start,end values.
+					 * Default <START>,<END> values.
 					 */
 					rng->start = 0;
 					rng->end = 0;
@@ -94,7 +90,7 @@ int main (int argc, char **argv) {
 					 */
 					while ((token = strsep(&range, ","))) {
 						if (!is_numeric(token)) {
-							fprintf(stderr, "%s: '%s' is not a valid range.\n\n", PROGNAME, argv[index]);
+							fprintf(stderr, "%s: '%s' is not a valid range value.\n\n", PROGNAME, token);
 
 							usage();
 
@@ -124,7 +120,7 @@ int main (int argc, char **argv) {
 				break;
 			case 2:
 				if (!is_file(argv[index])) {
-					fprintf(stderr, "%s: '%s' is not a valid filename.\n\n", PROGNAME, argv[index]);
+					fprintf(stderr, "%s: '%s' is not a valid filename.\n", PROGNAME, argv[index]);
 
 					goto on_error;
 				}
@@ -147,7 +143,7 @@ int main (int argc, char **argv) {
 	count = 1;
 
 	while ((read = getline(&line, &len, stream)) != -1) {
-		for (index = 0; index < sets; index++) {
+		for (index = 0; index < sets; index += 1) {
 			if (count >= ranges[index]->start && (count <= ranges[index]->end || !ranges[index]->end)) {
 				fwrite(line, read, 1, stdout);
 			}
@@ -157,14 +153,26 @@ int main (int argc, char **argv) {
 	}
 
 	/**
-	 * @todo: Properly free ranges pointer array.
+	 * Run clean-up tasks.
 	 */
+	for (index = 0; index < sets; index += 1) {
+		FREE(ranges[index]);
+	}
 
+	FREE(ranges);
 	FREE(range);
 
 	return EXIT_SUCCESS;
 
 on_error:
+	/**
+	 * Run clean-up tasks.
+	 */
+	for (index = 0; index < sets; index += 1) {
+		FREE(ranges[index]);
+	}
+
+	FREE(ranges);
 	FREE(range);
 
 	return EXIT_FAILURE;
