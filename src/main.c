@@ -2,27 +2,25 @@
  * main.c
  *
  * Copyright (C) 2018 Nickolas Burr <nickolasburr@gmail.com>
- *
- * Usage:
- *
- * rng 5,35 <FILE>
- * cat <FILE> | rng 5,35
  */
 
 #include "main.h"
 
 int main (int argc, char **argv) {
+	int i, n;
+	int start, end, count;
 	int sets, index, zindex;
-	int count, start, end, opt_value, long_opt_index;
+	int opt_value, long_opt_index;
 	size_t len;
 	ssize_t read;
 	FILE *stream = NULL;
-	char *ptr = NULL;
-	char *range = NULL;
-	char *line = NULL,
-	     *token = NULL;
 	Range_T **ranges;
 	Range_T *rng;
+	char *ptr = NULL;
+	char *range = NULL,
+	     *urange = NULL;
+	char *line = NULL,
+	     *token = NULL;
 
 	/**
 	 * Designated getopt long options.
@@ -52,8 +50,7 @@ int main (int argc, char **argv) {
 	}
 
 	/**
-	 * At minimum, require a range argument. This is enforced to
-	 * prevent rng from being [mis]used the way cat is [mis]used.
+	 * At minimum, require a range argument.
 	 */
 	if (argc < 2) {
 		fprintf(stderr, "%s: Invalid number of arguments\n", PROGNAME);
@@ -61,14 +58,24 @@ int main (int argc, char **argv) {
 		exit(EXIT_FAILURE);
 	}
 
-	sets = 0;
-	start = 0;
-	end = 0;
+	i = 0;
+	n = 0;
 
-	ranges = ALLOC(sizeof(ranges));
+	/**
+	 * User-provided range[s].
+	 */
+	urange = argv[1];
+
+	while (urange[i++]) {
+		if (urange[i] == ':') {
+			n++;
+		}
+	}
+
+	sets = 0;
+	ranges = ALLOC(sizeof(*ranges) * n);
 
 	for (index = 1; index < argc; index += 1) {
-
 		/**
 		 * Use positional context to determine
 		 * the anticipated type of argument.
@@ -84,7 +91,7 @@ int main (int argc, char **argv) {
 					rng = ALLOC(sizeof(rng));
 
 					/**
-					 * Default start,end values.
+					 * Default <START>,<END> values.
 					 */
 					rng->start = 0;
 					rng->end = 0;
@@ -94,7 +101,7 @@ int main (int argc, char **argv) {
 					 */
 					while ((token = strsep(&range, ","))) {
 						if (!is_numeric(token)) {
-							fprintf(stderr, "%s: '%s' is not a valid range.\n\n", PROGNAME, argv[index]);
+							fprintf(stderr, "%s: '%s' is not a valid range value.\n\n", PROGNAME, token);
 
 							usage();
 
@@ -103,11 +110,11 @@ int main (int argc, char **argv) {
 
 						switch (zindex) {
 							case 0:
-								rng->start = (int) strtoul(token, NULL, 0);
+								rng->start = (unsigned int) strtoul(token, NULL, 0);
 
 								break;
 							case 1:
-								rng->end = (int) strtoul(token, NULL, 0);
+								rng->end = (unsigned int) strtoul(token, NULL, 0);
 
 								break;
 							default:
@@ -117,14 +124,13 @@ int main (int argc, char **argv) {
 						zindex++;
 					}
 
-					RESIZE(ranges, sizeof(rng));
 					ranges[sets++] = rng;
 				}
 
 				break;
 			case 2:
 				if (!is_file(argv[index])) {
-					fprintf(stderr, "%s: '%s' is not a valid filename.\n\n", PROGNAME, argv[index]);
+					fprintf(stderr, "%s: '%s' is not a valid filename.\n", PROGNAME, argv[index]);
 
 					goto on_error;
 				}
@@ -147,7 +153,7 @@ int main (int argc, char **argv) {
 	count = 1;
 
 	while ((read = getline(&line, &len, stream)) != -1) {
-		for (index = 0; index < sets; index++) {
+		for (index = 0; index < sets; index += 1) {
 			if (count >= ranges[index]->start && (count <= ranges[index]->end || !ranges[index]->end)) {
 				fwrite(line, read, 1, stdout);
 			}
@@ -157,15 +163,25 @@ int main (int argc, char **argv) {
 	}
 
 	/**
-	 * @todo: Properly free ranges pointer array.
+	 * Run clean-up tasks.
 	 */
+	for (index = 0; index < sets; index += 1) {
+		FREE(ranges[index]);
+	}
 
-	FREE(range);
+	FREE(ranges);
 
 	return EXIT_SUCCESS;
 
 on_error:
-	FREE(range);
+	/**
+	 * Run clean-up tasks.
+	 */
+	for (index = 0; index < sets; index += 1) {
+		FREE(ranges[index]);
+	}
+
+	FREE(ranges);
 
 	return EXIT_FAILURE;
 }

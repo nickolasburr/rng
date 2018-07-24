@@ -11,8 +11,8 @@
 #include "mem.h"
 
 typedef struct {
-	int start;
-	int end;
+	unsigned int start;
+	unsigned int end;
 } Range_T;
 
 #endif /* RNG_RANGE_H */

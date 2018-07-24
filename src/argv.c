@@ -25,7 +25,7 @@ static option_t options[] = {
 void usage (void) {
 	int index;
 
-	fprintf(stdout, "Usage: rng [OPTIONS] <START>,[<END>] [FILE]\n\n");
+	fprintf(stdout, "Usage: rng [OPTIONS] <START>[,<END>] [FILE]\n\n");
 	fprintf(stdout, "OPTIONS:\n\n");
 
 	for (index = 0; index < NUM_OPTIONS; index += 1) {
