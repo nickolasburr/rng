@@ -2,27 +2,25 @@
  * main.c
  *
  * Copyright (C) 2018 Nickolas Burr <nickolasburr@gmail.com>
- *
- * Usage:
- *
- * rng 5,35 <FILE>
- * cat <FILE> | rng 5,35
  */
 
 #include "main.h"
 
 int main (int argc, char **argv) {
+	int i, n;
+	int start, end, count;
 	int sets, index, zindex;
-	int count, start, end, opt_value, long_opt_index;
+	int opt_value, long_opt_index;
 	size_t len;
 	ssize_t read;
 	FILE *stream = NULL;
-	char *ptr = NULL;
-	char *range = NULL;
-	char *line = NULL,
-	     *token = NULL;
 	Range_T **ranges;
 	Range_T *rng;
+	char *ptr = NULL;
+	char *range = NULL,
+	     *urange = NULL;
+	char *line = NULL,
+	     *token = NULL;
 
 	/**
 	 * Designated getopt long options.
@@ -60,11 +58,24 @@ int main (int argc, char **argv) {
 		exit(EXIT_FAILURE);
 	}
 
+	i = 0;
+	n = 0;
+
+	/**
+	 * User-provided range[s].
+	 */
+	urange = argv[1];
+
+	while (urange[i++]) {
+		if (urange[i] == ':') {
+			n++;
+		}
+	}
+
 	sets = 0;
-	ranges = ALLOC(sizeof(ranges));
+	ranges = ALLOC(sizeof(*ranges) * n);
 
 	for (index = 1; index < argc; index += 1) {
-
 		/**
 		 * Use positional context to determine
 		 * the anticipated type of argument.
@@ -99,11 +110,11 @@ int main (int argc, char **argv) {
 
 						switch (zindex) {
 							case 0:
-								rng->start = (int) strtoul(token, NULL, 0);
+								rng->start = (unsigned int) strtoul(token, NULL, 0);
 
 								break;
 							case 1:
-								rng->end = (int) strtoul(token, NULL, 0);
+								rng->end = (unsigned int) strtoul(token, NULL, 0);
 
 								break;
 							default:
@@ -113,7 +124,6 @@ int main (int argc, char **argv) {
 						zindex++;
 					}
 
-					RESIZE(ranges, sizeof(rng));
 					ranges[sets++] = rng;
 				}
 
@@ -160,7 +170,6 @@ int main (int argc, char **argv) {
 	}
 
 	FREE(ranges);
-	FREE(range);
 
 	return EXIT_SUCCESS;
 
@@ -173,7 +182,6 @@ on_error:
 	}
 
 	FREE(ranges);
-	FREE(range);
 
 	return EXIT_FAILURE;
 }
