@@ -25,7 +25,7 @@
 #define is_null(ptr) ((ptr) == ((void *) 0))
 
 #define PROGNAME "rng"
-#define RNG_VERSION "1.0.0"
+#define RNG_VERSION "1.0.1"
 
 #define _GNU_SOURCE
 #define NULL_DEVICE "/dev/null"
