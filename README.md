@@ -7,6 +7,7 @@
 - [Installation](#installation)
   + [Homebrew](#homebrew)
   + [Source](#source)
+- [Notes](#notes)
 - [Examples](#examples)
 
 ## Installation
@@ -33,6 +34,10 @@ By default, files are installed to `/usr/local` You can install to an alternate 
 
 For example, `make install PREFIX=/opt`
 
+## Notes
+
+Certain range values can be omitted if they can be properly implied. To get multiple ranges, use the colon (`:`) operator.
+
 ## Examples
 
 Get lines 7-15 in `Makefile`.
@@ -51,4 +56,16 @@ Output lines 1-25 in `Makefile`.
 
 ```
 rng ,25 Makefile
+```
+
+Get lines 5-10 and 17-22 in `main.c`.
+
+```
+rng 5,10:17,22 main.c
+```
+
+Output all lines except 11-19 in main.c
+
+```
+rng ,10:20, main.c
 ```
