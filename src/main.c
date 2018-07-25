@@ -59,7 +59,7 @@ int main (int argc, char **argv) {
 	}
 
 	i = 0;
-	n = 0;
+	n = 1;
 
 	/**
 	 * User-provided range[s].
