@@ -46,7 +46,7 @@ Get lines 7-15 in `Makefile`.
 rng 7,15 Makefile
 ```
 
-Skip the first 4 lines of input.
+Skip the first 4 lines of input from a pipe.
 
 ```
 echo -e "First\nSecond\nThird\nFourth\nFifth" | rng 5
@@ -68,4 +68,10 @@ Output all lines except 11-19 in main.c
 
 ```
 rng ,10:20, main.c
+```
+
+Get lines 16-27 of a text document from the web.
+
+```
+curl -fsL https://www.w3.org/TR/PNG/iso_8859-1.txt | rng 16,27
 ```
