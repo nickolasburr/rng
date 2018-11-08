@@ -1,6 +1,6 @@
 # rng
 
-`rng` is a friendly, flexible alternative to `sed -n '<START>,<END>p'`.
+`rng` streams input from a file or `stdin` to `stdout`. If `sed -n '<START>,<END>p'`, `head -n`, and `tail -n` had a baby, it would be `rng`.
 
 ## Table of Contents
 
