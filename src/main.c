@@ -9,7 +9,7 @@
 int main (int argc, char **argv) {
 	int i, n;
 	int start, end, count;
-	int sets, index, zindex;
+	int pairs, index, zindex;
 	int opt_value, long_opt_index;
 	size_t len;
 	ssize_t read;
@@ -72,7 +72,7 @@ int main (int argc, char **argv) {
 		}
 	}
 
-	sets = 0;
+	pairs = 0;
 	ranges = ALLOC(sizeof(*ranges) * n);
 
 	for (index = 1; index < argc; index += 1) {
@@ -124,7 +124,7 @@ int main (int argc, char **argv) {
 						zindex++;
 					}
 
-					ranges[sets++] = rng;
+					ranges[pairs++] = rng;
 				}
 
 				break;
@@ -153,7 +153,7 @@ int main (int argc, char **argv) {
 	count = 1;
 
 	while ((read = getline(&line, &len, stream)) != -1) {
-		for (index = 0; index < sets; index += 1) {
+		for (index = 0; index < pairs; index += 1) {
 			if (count >= ranges[index]->start && (count <= ranges[index]->end || !ranges[index]->end)) {
 				fwrite(line, read, 1, stdout);
 			}
@@ -165,7 +165,7 @@ int main (int argc, char **argv) {
 	/**
 	 * Run clean-up tasks.
 	 */
-	for (index = 0; index < sets; index += 1) {
+	for (index = 0; index < pairs; index += 1) {
 		FREE(ranges[index]);
 	}
 
@@ -177,7 +177,7 @@ on_error:
 	/**
 	 * Run clean-up tasks.
 	 */
-	for (index = 0; index < sets; index += 1) {
+	for (index = 0; index < pairs; index += 1) {
 		FREE(ranges[index]);
 	}
 
