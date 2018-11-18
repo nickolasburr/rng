@@ -2,7 +2,7 @@
 
 `rng` streams input from a file or `stdin` to `stdout`.
 
-If `sed -n '<START>,<END>p'`, `head -n`, and `tail -n` had a baby, it would be `rng`.
+It is the love child of `sed -n '<START>,<END>p'`, `head -n`, and `tail -n`.
 
 ## Table of Contents
 
