@@ -14,8 +14,8 @@ int main (int argc, char **argv) {
 	size_t len;
 	ssize_t read;
 	FILE *stream = NULL;
-	Range_T **ranges;
-	Range_T *rng;
+	Range_T **ranges = NULL;
+	Range_T *rng = NULL;
 	char *ptr = NULL;
 	char *range = NULL,
 	     *urange = NULL;
@@ -36,15 +36,12 @@ int main (int argc, char **argv) {
 		switch (opt_value) {
 			case 'h':
 				usage();
-
 				exit(EXIT_SUCCESS);
 			case 'v':
 				fprintf(stdout, "%s\n", RNG_VERSION);
-
 				exit(EXIT_SUCCESS);
 			case '?':
 				usage();
-
 				exit(EXIT_FAILURE);
 		}
 	}
@@ -54,7 +51,6 @@ int main (int argc, char **argv) {
 	 */
 	if (argc < 2) {
 		fprintf(stderr, "%s: Invalid number of arguments\n", PROGNAME);
-
 		exit(EXIT_FAILURE);
 	}
 
@@ -85,9 +81,12 @@ int main (int argc, char **argv) {
 				/**
 				 * Get range[s] from ranges string.
 				 */
-				for (range = strtok_r(argv[index], ":", &ptr); !is_null(range); range = strtok_r(NULL, ":", &ptr)) {
+				for (
+					range = strtok_r(argv[index], ":", &ptr);
+					!is_null(range);
+					range = strtok_r(NULL, ":", &ptr)
+				) {
 					zindex = 0;
-
 					rng = ALLOC(sizeof(rng));
 
 					/**
@@ -101,8 +100,12 @@ int main (int argc, char **argv) {
 					 */
 					while ((token = strsep(&range, ","))) {
 						if (!is_numeric(token)) {
-							fprintf(stderr, "%s: '%s' is not a valid range value.\n\n", PROGNAME, token);
-
+							fprintf(
+								stderr,
+								"%s: '%s' is not a valid range value.\n\n",
+								PROGNAME,
+								token
+							);
 							usage();
 
 							goto on_error;
@@ -111,11 +114,9 @@ int main (int argc, char **argv) {
 						switch (zindex) {
 							case 0:
 								rng->start = (unsigned int) strtoul(token, NULL, 0);
-
 								break;
 							case 1:
 								rng->end = (unsigned int) strtoul(token, NULL, 0);
-
 								break;
 							default:
 								break;
@@ -130,13 +131,17 @@ int main (int argc, char **argv) {
 				break;
 			case 2:
 				if (!is_file(argv[index])) {
-					fprintf(stderr, "%s: '%s' is not a valid filename.\n", PROGNAME, argv[index]);
+					fprintf(
+						stderr,
+						"%s: '%s' is not a valid filename.\n",
+						PROGNAME,
+						argv[index]
+					);
 
 					goto on_error;
 				}
 
 				stream = fopen(argv[index], "r");
-
 				break;
 			default:
 				break;
@@ -154,7 +159,10 @@ int main (int argc, char **argv) {
 
 	while ((read = getline(&line, &len, stream)) != -1) {
 		for (index = 0; index < pairs; index += 1) {
-			if (count >= ranges[index]->start && (count <= ranges[index]->end || !ranges[index]->end)) {
+			if (
+				count >= ranges[index]->start
+				&& (count <= ranges[index]->end || !ranges[index]->end)
+			) {
 				fwrite(line, read, 1, stdout);
 			}
 		}
@@ -170,7 +178,6 @@ int main (int argc, char **argv) {
 	}
 
 	FREE(ranges);
-
 	return EXIT_SUCCESS;
 
 on_error:
@@ -182,6 +189,5 @@ on_error:
 	}
 
 	FREE(ranges);
-
 	return EXIT_FAILURE;
 }
