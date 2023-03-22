@@ -81,4 +81,4 @@ Get lines 16-27 of a text document from the web.
 
 .. code-block:: sh
 
-   curl -fsL https://www.w3.org/TR/PNG/iso_8859-1.txt | rng 16,27
+   curl -fsL https://www.w3.org/TR/2003/REC-PNG-20031110/iso_8859-1.txt | rng 16,27
