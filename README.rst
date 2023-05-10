@@ -33,7 +33,7 @@ Source
    make
    make install
 
-By default, files are installed to ``/usr/local`` You can install to an alternate location by passing ``PREFIX`` to ``make install``.
+By default, files are installed to ``/usr/local`` You can install elsewhere by passing ``PREFIX`` to ``make install``.
 
 .. code-block:: sh
 
