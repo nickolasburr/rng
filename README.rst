@@ -1,7 +1,8 @@
 rng
 ===
 
-.. contents:: :local:
+.. contents::
+   :local:
 
 Description
 -----------
