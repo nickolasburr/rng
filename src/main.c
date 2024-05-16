@@ -10,9 +10,9 @@ int main (int argc, char **argv) {
 	int i, n;
 	int start, end, count;
 	int pairs, index, zindex;
-	int opt_value, long_opt_index;
+	int opt_index, opt_value;
 	size_t len;
-	ssize_t read;
+	ssize_t bytes;
 	FILE *stream = NULL;
 	Range_T **ranges = NULL;
 	Range_T *rng = NULL;
@@ -25,14 +25,23 @@ int main (int argc, char **argv) {
 	/**
 	 * Designated getopt long options.
 	 */
-	static struct option long_options[] = {
+	static struct option long_opts[] = {
 		{ "help", no_argument, 0, 'h' },
 		{ "version", no_argument, 0, 'v' },
 	};
 
-	long_opt_index = 0;
+	opt_index = 0;
+	opt_value = 0;
 
-	while ((opt_value = getopt_long(argc, argv, "hv", long_options, &long_opt_index)) != -1) {
+	do {
+		opt_value = getopt_long(
+			argc,
+			argv,
+			"hv",
+			long_opts,
+			&opt_index
+		);
+
 		switch (opt_value) {
 			case 'h':
 				usage();
@@ -44,13 +53,17 @@ int main (int argc, char **argv) {
 				usage();
 				exit(EXIT_FAILURE);
 		}
-	}
+	} while (opt_value != -1);
 
 	/**
 	 * At minimum, require a range argument.
 	 */
 	if (argc < 2) {
-		fprintf(stderr, "%s: Invalid number of arguments\n", PROGNAME);
+		fprintf(
+			stderr,
+			"%s: Invalid number of arguments\n",
+			PROGNAME
+		);
 		exit(EXIT_FAILURE);
 	}
 
@@ -155,20 +168,23 @@ int main (int argc, char **argv) {
 		stream = stdin;
 	}
 
+	bytes = 0;
 	count = 1;
 
-	while ((read = getline(&line, &len, stream)) != -1) {
+	do {
+		bytes = getline(&line, &len, stream);
+
 		for (index = 0; index < pairs; index += 1) {
 			if (
 				count >= ranges[index]->start
 				&& (count <= ranges[index]->end || !ranges[index]->end)
 			) {
-				fwrite(line, read, 1, stdout);
+				fwrite(line, bytes, 1, stdout);
 			}
 		}
 
 		count++;
-	}
+	} while (bytes != -1);
 
 	/**
 	 * Run clean-up tasks.
