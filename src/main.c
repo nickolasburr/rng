@@ -42,6 +42,10 @@ int main (int argc, char **argv) {
 			&opt_index
 		);
 
+		if (opt_value == -1) {
+			break;
+		}
+
 		switch (opt_value) {
 			case 'h':
 				usage();
@@ -53,7 +57,7 @@ int main (int argc, char **argv) {
 				usage();
 				exit(EXIT_FAILURE);
 		}
-	} while (opt_value != -1);
+	} while (1);
 
 	/**
 	 * At minimum, require a range argument.
@@ -174,17 +178,22 @@ int main (int argc, char **argv) {
 	do {
 		bytes = getline(&line, &len, stream);
 
+		if (bytes == -1) {
+			break;
+		}
+
 		for (index = 0; index < pairs; index += 1) {
 			if (
 				count >= ranges[index]->start
 				&& (count <= ranges[index]->end || !ranges[index]->end)
 			) {
 				fwrite(line, bytes, 1, stdout);
+				fflush(stdout);
 			}
 		}
 
 		count++;
-	} while (bytes != -1);
+	} while (1);
 
 	/**
 	 * Run clean-up tasks.
