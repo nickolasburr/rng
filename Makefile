@@ -2,9 +2,11 @@
 ### Makefile
 ###
 
-CC      = gcc
-TARGET  = rng
-INSTALL = /usr/bin/install -c
+CC      ?= gcc
+CFLAGS  += -I$(INCLUDE)
+LDFLAGS += -pthread -lz
+TARGET  ?= rng
+INSTALL ?= /usr/bin/install -c
 
 INCLUDE = include
 SOURCES = src
@@ -12,9 +14,6 @@ TOOLS   = tools
 
 CSFILES = $(wildcard $(SOURCES)/*.c)
 OBFILES = $(patsubst %.c,%.o,$(CSFILES))
-
-CFLAGS  = -I$(INCLUDE)
-LDFLAGS = -pthread -lz
 
 .PHONY: all $(TARGET) clean install uninstall
 
